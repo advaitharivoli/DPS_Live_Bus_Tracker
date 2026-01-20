@@ -132,60 +132,60 @@
             track.innerHTML = '';
             track.style.transform = 'translateX(0)';
 
-            if (items.length === 0) {
-                track.innerHTML = '<div class="slide-page"><div class="no-data" style="text-align:center; padding: 40px; color: var(--text-dim); letter-spacing: 2px;">SYSTEM READY • MONITORING ZONES</div></div>';
-                return;
-            }
+            track.innerHTML = '';
 
-            for (let i = 0; i < totalPages; i++) {
-                const pageItems = items.slice(i * perPage, (i + 1) * perPage);
-                const page = document.createElement('div');
-                page.className = 'slide-page';
+            // Fixed header table
+            const headerTable = document.createElement('table');
+            headerTable.className = 'display-board fixed-header';
+            headerTable.innerHTML = `
+    <thead>
+        <tr class="board-header">
+            <th style="width: 35%">BUS ID</th>
+            <th style="width: 65%">LOCATION</th>
+        </tr>
+    </thead>
+`;
 
-                const table = document.createElement('table');
-                table.className = 'display-board';
-                table.innerHTML = `
-                    <thead>
-                        <tr class="board-header">
-                            <th style="width: 35%">BUS ID</th>
-                            <th style="width: 65%">LOCATION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${pageItems.map(bus => {
-                    const statusClass = bus.status.replace(/\s+/g, '-').toLowerCase();
-                    return `
-                                <tr class="bus-row row-${statusClass}">
-                                    <td class="bus-id-cell">
-                                        <div class="bus-badge">${bus.id}</div>
-                                    </td>
-                                    <td class="status-cell">
-                                        <div class="status-wrapper ${statusClass}">
-                                            <span class="status-text">${bus.status}</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                }).join('')}
-                    </tbody>
-                `;
-                page.appendChild(table);
-                track.appendChild(page);
-            }
+            // Scrolling body wrapper (viewport)
+            const viewport = document.createElement('div');
+            viewport.className = 'marquee-viewport';
 
-            // Clear previous interval if any
-            if (track.dataset.intervalId) {
-                clearInterval(track.dataset.intervalId);
-            }
+            // Scrolling ribbon (animated)
+            const ribbon = document.createElement('div');
+            ribbon.className = 'marquee-ribbon';
 
-            if (totalPages > 1) {
-                let current = 0;
-                const intervalId = setInterval(() => {
-                    current = (current + 1) % totalPages;
-                    track.style.transform = `translateX(-${current * 100}%)`;
-                }, 7000);
-                track.dataset.intervalId = intervalId;
-            }
+            // Duplicate rows for seamless loop
+            const rows = [...items, ...items];
+
+            const bodyTable = document.createElement('table');
+            bodyTable.className = 'display-board';
+
+            bodyTable.innerHTML = `
+    <tbody>
+        ${rows.map(bus => {
+                const statusClass = bus.status.replace(/\s+/g, '-').toLowerCase();
+                return `
+                <tr class="bus-row row-${statusClass}">
+                    <td style="width:35%">
+                        <div class="bus-badge">${bus.id}</div>
+                    </td>
+                    <td style="width:65%">
+                        <div class="status-wrapper ${statusClass}">
+                            <span class="status-text">${bus.status}</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('')}
+    </tbody>
+`;
+
+            ribbon.appendChild(bodyTable);
+            viewport.appendChild(ribbon);
+
+            track.appendChild(headerTable);
+            track.appendChild(viewport);
+
         }
 
         function initDashboard() {

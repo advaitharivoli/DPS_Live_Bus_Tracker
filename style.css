@@ -414,3 +414,42 @@ footer {
 .pulse {
     animation: pulse 2s infinite;
 }
+
+/* === FIXED HEADER + FULL HEIGHT MARQUEE === */
+
+.slider-track {
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Header never moves */
+.fixed-header {
+    margin-bottom: 10px;
+}
+
+/* Viewport masks the scrolling content */
+.marquee-viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* The moving ribbon */
+.marquee-ribbon {
+    position: absolute;
+    width: 100%;
+    /*if want to change the speed of the motion, then change the value of 93s to any other higher value*/
+    /*higher number= slower motion*/
+    animation: marquee-scroll 93s linear infinite;
+}
+
+/* Perfect seamless loop */
+@keyframes marquee-scroll {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-50%);
+    }
+}
